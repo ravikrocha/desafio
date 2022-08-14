@@ -1,4 +1,3 @@
-#%%
 from typing import List
 import pandas as pd
 
@@ -16,7 +15,9 @@ class ValuableItem:
 
     @property
     def value_density(self):
-        return self.profit / (self.cost + 1e-9)
+        return (
+            self.profit / self.cost
+        )  # desconsideraremos os casos triviais de custo nulo.
 
 
 def items_to_table(items: List[ValuableItem]) -> pd.DataFrame:
@@ -48,8 +49,8 @@ items_to_table(available_items)
 
 
 def greedy(max_cost: float, available_items: List[ValuableItem]) -> List[ValuableItem]:
-    """Função que resolve o problema da mochila sem nenhuma restrição.
-    Ela ordena os itens da lista de acordo com a densidade.
+    """Função que retorna o algoritmo guloso aplicado a uma lista de itens. É a função básica
+    que ordena os itens da lista de acordo com a densidade sem nenhuma restrição adicional.
 
     Args:
         max_cost (float): custo máximo de todos os investimentos
@@ -67,63 +68,14 @@ def greedy(max_cost: float, available_items: List[ValuableItem]) -> List[Valuabl
     return chosen_items
 
 
-def dens_four_greater_two(available_items: List[ValuableItem]):
-    """Função que retorna o valor True se a densidade do item 4 é maior que a densidade
-    do item 2.
-
-    Args:
-        available_items (List[ValuableItem]): lista representando os investimentos.
-
-    Returns:
-        bool: valor True se a densidade do item 4 é maior que a densidade do item 2.
-    """
-    for item1 in available_items:
-        if item1.name == "Item 3":
-            for item2 in available_items:
-                if item2.name == "Item 1":
-                    if item1.value_density > item2.value_density:
-                        return True
-                    else:
-                        return False
-    return None
-
-
-def cost_ft_le_max(max_cost: float, available_items: List[ValuableItem]):
-    """Indica se a soma do custo dos items 2 e 4 são menores ou igual que o custo
-     total de todos os investimentos.
-
-    Args:
-        max_cost (float): custo máximo.
-        available_items (List[ValuableItem]): lista representando os investimentos.
-
-    Returns:
-        bool: Retorna True se a soma do custo dos itens são menores que o custo total
-    """
-    for item1 in available_items:
-        if item1.name == "Item 3":
-            for item2 in available_items:
-                if item2.name == "Item 1":
-                    if item1.cost + item2.cost <= max_cost:
-                        return True
-                    else:
-                        return False
-    return None
-
-
 def greedy_with4(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
     """Seleciona previamente o item 4 e após isso executa o algoritmo guloso
     com os itens restantes.
-        Essa função será usada apenas quando necessária. Em alguns momentos, após
-    a seleção do item 2 iremos usar essa função para satisfazer a segunda
-    restrição do desafio. Note que nem sempre podemos ou devemos adicionar o item 4 de
-    forma automática após a seleção do item 2. O lucro da carteira com os itens
-    2 e 4 deve ser maior do que a carteira sem esses itens, trocando esses itens
-    por outros mais lucrativos.
 
     Args:
-        max_cost (float): custo máximo
+        max_cost (float): custo máximo de todos os investimentos.
         available_items (List[ValuableItem]): lista representando os investimentos.
 
     Returns:
@@ -143,6 +95,16 @@ def greedy_with4(
 def chosen_itens_contains_2(
     max_cost: float, available_items: List[ValuableItem]
 ) -> bool:
+    """A função retorna True se o item 2 está no algorithmo guloso básico sem as
+    restrições.
+
+    Args:
+        max_cost (float): custo máximo de todos os investimentos.
+        available_items (List[ValuableItem]): lista representando os investimentos.
+
+    Returns:
+        bool: True se o item 2 está na lista que a função greedy retorna.
+    """
     for item in greedy(max_cost, available_items):
         if item.name == "Item 1":
             return True
@@ -152,6 +114,16 @@ def chosen_itens_contains_2(
 def chosen_itens_contains_4(
     max_cost: float, available_items: List[ValuableItem]
 ) -> bool:
+    """A função retorna True se o item 4 está no algorithmo guloso básico sem as
+    restrições.
+
+    Args:
+        max_cost (float): custo máximo de todos os investimentos.
+        available_items (List[ValuableItem]): lista representando os investimentos.
+
+    Returns:
+        bool: True se o item 4 está na lista que a função greedy retorna.
+    """
     for item in greedy(max_cost, available_items):
         if item.name == "Item 3":
             return True
@@ -161,6 +133,17 @@ def chosen_itens_contains_4(
 def chosen_itens_contains_2_after_4(
     max_cost: float, available_items: List[ValuableItem]
 ) -> bool:
+    """Retorna True se após do item 4 ser adicionado na lista que é
+    retornada da função greedy, como primeiro elemento da fila,
+    o item 2 também é adicionado posteriormente.
+
+    Args:
+        max_cost (float): custo máximo de todos os investimentos.
+        available_items (List[ValuableItem]): lista representando os investimentos.
+
+    Returns:
+        bool: True se o item 2 está na lista que a função greedy_with4 retorna.
+    """
     for item in greedy_with4(max_cost, available_items):
         if item.name == "Item 1":
             return True
@@ -170,14 +153,14 @@ def chosen_itens_contains_2_after_4(
 def greedy_restriction2(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
-    """Resolve a segunda restrição.
+    """Algoritmo levando em conta a segunda restrição.
 
     Args:
-        max_cost (float): custo máximo.
-        available_items (List[ValuableItem]): retorna a lista já ordenada.
+        max_cost (float): custo máximo de todos os investimentos.
+        available_items (List[ValuableItem]): lista representando os investimentos.
 
     Returns:
-        List[ValuableItem]: retorna a lista já ordenada e com a restrição satisfeita.
+        List[ValuableItem]: retorna a lista já ordenada e com a restrição 2 satisfeita.
     """
     available_items_without2 = list(
         filter(lambda item: item.name != "Item 1", available_items)
@@ -207,13 +190,15 @@ def greedy_knapsack(
     a densidade. As duas regras de restrição também são satisfeitas.
 
     Args:
-        max_cost (float): custo máximo.
-        available_items (List[ValuableItem]): lista representando os investimentos
+        max_cost (float): custo máximo de todos os investimentos.
+        available_items (List[ValuableItem]): lista representando os investimentos.
 
     Returns:
         List[ValuableItem]: lista já ordenada respeitando às duas restrições.
     """
-    if available_items[0].value_density >= available_items[4].value_density:
+    if (  # primeira restrição
+        available_items[0].value_density >= available_items[4].value_density
+    ):
         return greedy_restriction2(max_cost, available_items[:4] + available_items[5:])
     else:
         return greedy_restriction2(max_cost, available_items[1:])
@@ -221,5 +206,3 @@ def greedy_knapsack(
 
 chosen_items = greedy_knapsack(max_cost, available_items)
 items_to_table(chosen_items)
-
-# %%
