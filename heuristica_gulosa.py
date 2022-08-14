@@ -1,3 +1,4 @@
+#%%
 from typing import List
 import pandas as pd
 
@@ -117,15 +118,9 @@ def greedy_with4(
         Essa função será usada apenas quando necessária. Em alguns momentos, após
     a seleção do item 2 iremos usar essa função para satisfazer a segunda
     restrição do desafio. Note que nem sempre podemos ou devemos adicionar o item 4 de
-    forma automática após a seleção do item 2.
-        Utilizaremos essa função após os itens com maior densidade serem selecionados
-    e após o item 2 ser escolhido. Desse modo, utilizaremos essa função quando as
-    seguintes premissas estiverem presentes:
-
-    1.  Após o item 2 ser selecionado, o item 4 deve conseguir entrar na carteira de
-    investimento, ou seja, o seu custo ser menor ou igual ao custo restante.
-    2. O lucro da carteira com os itens 2 e 4 deve ser maior do que a carteira sem
-    esses itens, trocando esses itens por outros mais lucrativos.
+    forma automática após a seleção do item 2. O lucro da carteira com os itens
+    2 e 4 deve ser maior do que a carteira sem esses itens, trocando esses itens
+    por outros mais lucrativos.
 
     Args:
         max_cost (float): custo máximo
@@ -145,12 +140,37 @@ def greedy_with4(
     return chosen_items
 
 
+def chosen_itens_contains_2(
+    max_cost: float, available_items: List[ValuableItem]
+) -> bool:
+    for item in greedy(max_cost, available_items):
+        if item.name == "Item 1":
+            return True
+    return False
+
+
+def chosen_itens_contains_4(
+    max_cost: float, available_items: List[ValuableItem]
+) -> bool:
+    for item in greedy(max_cost, available_items):
+        if item.name == "Item 3":
+            return True
+    return False
+
+
+def chosen_itens_contains_2_after_4(
+    max_cost: float, available_items: List[ValuableItem]
+) -> bool:
+    for item in greedy_with4(max_cost, available_items):
+        if item.name == "Item 1":
+            return True
+    return False
+
+
 def greedy_restriction2(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
-    """Resolve a segunda restrição. Se o item 2 for selecionado, então o item 4
-    também é escolhido caso o lucro deles forem maior que a carteira escolhendo
-    outros ao invés de ambos.
+    """Resolve a segunda restrição.
 
     Args:
         max_cost (float): custo máximo.
@@ -160,22 +180,23 @@ def greedy_restriction2(
         List[ValuableItem]: retorna a lista já ordenada e com a restrição satisfeita.
     """
     available_items_without2 = list(
-        filter(
-            lambda item: item.name != "Item 1", available_items
-        )  # remove o item 2 da lista
-    )
-    if dens_four_greater_two(available_items):
-        return greedy(max_cost, available_items)
-    else:
-        if cost_ft_le_max(max_cost, available_items):
+        filter(lambda item: item.name != "Item 1", available_items)
+    )  # remove o item 2 da lista
+    if chosen_itens_contains_2(max_cost, available_items):
+        if chosen_itens_contains_4(max_cost, available_items):
+            return greedy(max_cost, available_items)
+        else:
             if sum(
                 item.profit for item in greedy(max_cost, available_items_without2)
             ) >= sum(item.profit for item in greedy_with4(max_cost, available_items)):
                 return greedy(max_cost, available_items_without2)
             else:
-                return greedy_with4(max_cost, available_items)
-        else:
-            return greedy(max_cost, available_items_without2)
+                if chosen_itens_contains_2_after_4:
+                    return greedy_with4(max_cost, available_items)
+                else:
+                    return greedy(max_cost, available_items_without2)
+    else:
+        return greedy(max_cost, available_items)
 
 
 def greedy_knapsack(
@@ -200,3 +221,5 @@ def greedy_knapsack(
 
 chosen_items = greedy_knapsack(max_cost, available_items)
 items_to_table(chosen_items)
+
+# %%
