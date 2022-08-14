@@ -164,7 +164,7 @@ def greedy_restriction2(
     """
     available_items_without2 = list(
         filter(lambda item: item.name != "Item 1", available_items)
-    )  # remove o item 2 da lista
+    )  # variável sem o item 2 da lista
     if chosen_itens_contains_2(max_cost, available_items):
         if chosen_itens_contains_4(max_cost, available_items):
             return greedy(max_cost, available_items)
