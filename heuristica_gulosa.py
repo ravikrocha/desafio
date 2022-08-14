@@ -58,8 +58,7 @@ def greedy(max_cost: float, available_items: List[ValuableItem]) -> List[Valuabl
         List[ValuableItem]: retorna a lista já ordenada.
     """
     chosen_items = []
-    sorted_items = sorted(
-        available_items, key=lambda i: i.value_density, reverse=True)
+    sorted_items = sorted(available_items, key=lambda i: i.value_density, reverse=True)
     for item in sorted_items:
         if item.cost <= max_cost:
             chosen_items.append(item)
@@ -114,7 +113,7 @@ def greedy_with4(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
     """Se o item 2 for selecionado, selecionar o item 4 em seguida. Essa função
-     será usada apenas quando necessária. Nesse sempre podemos ou devemos adicionar 
+     será usada apenas quando necessária. Nesse sempre podemos ou devemos adicionar
      o item 4 de forma automática após a seleção do item 2.
 
     Args:
@@ -124,12 +123,10 @@ def greedy_with4(
     Returns:
         List[ValuableItem]: retorna a lista já ordenada.
     """
-    chosen_items = list(
-        filter(lambda item: item.name == "Item 3", available_items))
+    chosen_items = list(filter(lambda item: item.name == "Item 3", available_items))
     for item in chosen_items:
         max_cost -= item.cost
-    sorted_items = sorted(
-        available_items, key=lambda i: i.value_density, reverse=True)
+    sorted_items = sorted(available_items, key=lambda i: i.value_density, reverse=True)
     for item in sorted_items:
         if item.cost <= max_cost:
             chosen_items.append(item)
@@ -170,8 +167,8 @@ def greedy_restriction2(
 def greedy_knapsack(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
-    """Função final do programa. Ela seleciona os melhores investimentos 
-    sem ultrapassar o valor do custo máximo usando a ordenação com relação 
+    """Função final do programa. Ela seleciona os melhores investimentos
+    sem ultrapassar o valor do custo máximo usando a ordenação com relação
     a densidade. As duas regras de restrição também são satisfeitas.
 
     Args:
