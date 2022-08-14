@@ -88,8 +88,8 @@ def dens_four_greater_two(available_items: List[ValuableItem]):
 
 
 def cost_ft_le_max(max_cost: float, available_items: List[ValuableItem]):
-    """Indica se a soma do custo dos items 2 e 4 são menores que o custo total de todos
-    os investimentos.
+    """Indica se a soma do custo dos items 2 e 4 são menores ou igual que o custo
+     total de todos os investimentos.
 
     Args:
         max_cost (float): custo máximo.
@@ -112,9 +112,20 @@ def cost_ft_le_max(max_cost: float, available_items: List[ValuableItem]):
 def greedy_with4(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
-    """Se o item 2 for selecionado, selecionar o item 4 em seguida. Essa função
-     será usada apenas quando necessária. Nesse sempre podemos ou devemos adicionar
-     o item 4 de forma automática após a seleção do item 2.
+    """Seleciona previamente o item 4 e após isso executa o algoritmo guloso
+    com os itens restantes.
+        Essa função será usada apenas quando necessária. Em alguns momentos, após
+    a seleção do item 2 iremos usar essa função para satisfazer a segunda
+    restrição do desafio. Note que nem sempre podemos ou devemos adicionar o item 4 de
+    forma automática após a seleção do item 2.
+        Utilizaremos essa função após os itens com maior densidade serem selecionados
+    e após o item 2 ser escolhido. Desse modo, utilizaremos essa função quando as
+    seguintes premissas estiverem presentes:
+
+    1.  Após o item 2 ser selecionado, o item 4 deve conseguir entrar na carteira de
+    investimento, ou seja, o seu custo ser menor ou igual ao custo restante.
+    2. O lucro da carteira com os itens 2 e 4 deve ser maior do que a carteira sem
+    esses itens, trocando esses itens por outros mais lucrativos.
 
     Args:
         max_cost (float): custo máximo
@@ -138,7 +149,8 @@ def greedy_restriction2(
     max_cost: float, available_items: List[ValuableItem]
 ) -> List[ValuableItem]:
     """Resolve a segunda restrição. Se o item 2 for selecionado, então o item 4
-    também será.
+    também é escolhido caso o lucro deles forem maior que a carteira escolhendo
+    outros ao invés de ambos.
 
     Args:
         max_cost (float): custo máximo.
@@ -148,7 +160,9 @@ def greedy_restriction2(
         List[ValuableItem]: retorna a lista já ordenada e com a restrição satisfeita.
     """
     available_items_without2 = list(
-        filter(lambda item: item.name != "Item 1", available_items)
+        filter(
+            lambda item: item.name != "Item 1", available_items
+        )  # remove o item 2 da lista
     )
     if dens_four_greater_two(available_items):
         return greedy(max_cost, available_items)
