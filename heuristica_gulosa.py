@@ -82,13 +82,16 @@ def greedy_with4(
         List[ValuableItem]: retorna a lista já ordenada.
     """
     chosen_items = list(filter(lambda item: item.name == "Item 3", available_items))
-    for item in chosen_items:
-        max_cost -= item.cost
-    sorted_items = sorted(available_items, key=lambda i: i.value_density, reverse=True)
-    for item in sorted_items:
-        if item.cost <= max_cost:
-            chosen_items.append(item)
+    if sum(item.cost for item in chosen_items) <= max_cost:
+        for item in chosen_items:
             max_cost -= item.cost
+            sorted_items = sorted(
+                available_items, key=lambda i: i.value_density, reverse=True
+            )
+            for item in sorted_items:
+                if item.cost <= max_cost:
+                    chosen_items.append(item)
+                    max_cost -= item.cost
     return chosen_items
 
 
