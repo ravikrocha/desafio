@@ -92,6 +92,8 @@ def greedy_with4(
                 if item.cost <= max_cost:
                     chosen_items.append(item)
                     max_cost -= item.cost
+    else:
+        []
     return chosen_items
 
 
